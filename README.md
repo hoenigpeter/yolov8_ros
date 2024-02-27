@@ -1,1 +1,5 @@
-# yolov8_ros
+# YOLOv8 - ROS Wrapper - Docker Container
+
+## Usage
+``` cd docker
+docker compose up ```
