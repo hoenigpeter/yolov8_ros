@@ -1,4 +1,4 @@
-path: ./ycb_ichores  # dataset root dir
+path: /home/hoenig/temp/yolov8_ros/datasets/ycb_ichores  # dataset root dir
 train:  # train images (relative to 'path') 128 images
     - train
 val:   test
