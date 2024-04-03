@@ -1,6 +1,19 @@
-FROM nvidia/cudagl:11.3.0-devel-ubuntu20.04
+FROM pytorch/pytorch:2.2.2-cuda12.1-cudnn8-runtime
+RUN pip install --no-cache nvidia-tensorrt --index-url https://pypi.ngc.nvidia.com
 
 ENV DEBIAN_FRONTEND noninteractive
+
+# Downloads to user config dir
+ADD https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf \
+    https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.Unicode.ttf \
+    /root/.config/Ultralytics/
+
+RUN apt update \
+    && apt install --no-install-recommends -y gcc git zip curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0
+
+# Security updates
+# https://security.snyk.io/vuln/SNYK-UBUNTU1804-OPENSSL-3314796
+RUN apt upgrade --no-install-recommends -y openssl tar
 
 RUN apt-get update && apt-get install -y \
 	python3-opencv ca-certificates python3-dev git wget sudo ninja-build
@@ -10,6 +23,10 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && \
 	python3 get-pip.py && \
 	rm get-pip.py
 
+# Install pip packages
+RUN python3 -m pip install --upgrade pip wheel
+RUN pip install albumentations comet pycocotools
+
 # install lsb-release and curl
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -18,50 +35,12 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# add the keys
-RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+RUN pip install opencv-python
+RUN pip install matplotlib
+RUN pip install imgaug==0.4.0
+RUN pip install setuptools
+RUN pip install pandas
 
-# install ros
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ros-noetic-desktop-full \
-    ros-noetic-catkin \
-    ros-noetic-vision-msgs \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+RUN mkdir yolo
 
-SHELL ["/bin/bash", "-c"]
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-
-# install python dependencies
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    python3-rosdep \
-    python3-rosinstall \
-    python3-rosinstall-generator \
-    python3-wstool \
-    build-essential \
-    python3-rosdep \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
-
-# catkin tools
-RUN apt-get update && apt-get install --no-install-recommends -y --allow-unauthenticated \
-     python3-catkin-tools \
-     && rm -rf /var/lib/apt/lists/*
-RUN sudo rosdep init
-RUN rosdep update
-RUN mkdir -p /root/catkin_ws/src
-RUN /bin/bash -c  '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so; catkin build'
-
-# clone and build message and service definitions
-RUN /bin/bash -c 'cd /root/catkin_ws/src; \
-                  git clone https://github.com/v4r-tuwien/object_detector_msgs.git'
-RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin build'
-
-# install yolov5 requirements
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-WORKDIR /root
+WORKDIR /yolo
