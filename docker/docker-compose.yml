@@ -7,7 +7,7 @@ services:
     privileged: true
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_ros
     network_mode: "host"
     runtime: "nvidia"
     volumes:
