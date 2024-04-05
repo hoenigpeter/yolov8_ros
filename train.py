@@ -1,123 +1,24 @@
+import argparse
 from ultralytics import YOLO
 
-# Load a model
-model = YOLO('yolov8s.pt')  # load a pretrained model (recommended for training)
+# python train.py --model yolov8s.pt --data tless.yaml
 
-model.info()
+def train_yolo(model_path, data_file, epochs=30, img_size=720):
+    # Load the model
+    model = YOLO(model_path)
+    
+    # Train the model
+    results = model.train(data=data_file, epochs=epochs, imgsz=img_size)
+    
+    return results
 
-# task=segment
-# mode=train
-# model=yolov8l-seg.pt
-# data=ycb_ichores.yaml
-# epochs=100
-# time=None
-# patience=50
-# batch=16
-# imgsz=640
-# save=True
-# save_period=-1
-# cache=False
-# device=None
-# workers=8
-# project=None
-# name=train7
-# exist_ok=False
-# pretrained=True
-# optimizer=auto
-# verbose=True
-# seed=0
-# deterministic=True
-# single_cls=False
-# rect=False
-# cos_lr=False
-# close_mosaic=10
-# resume=False
-# amp=True
-# fraction=1.0
-# profile=False
-# freeze=None
-# overlap_mask=True
-# mask_ratio=4
-# dropout=0.0
-# val=True
-# split=val
-# save_json=False
-# save_hybrid=False
-# conf=None
-# iou=0.7
-# max_det=300
-# half=False
-# dnn=False
-# plots=True
-# source=None
-# vid_stride=1
-# stream_buffer=False
-# visualize=False
-# augment=True
-# agnostic_nms=False
-# classes=None
-# retina_masks=False
-# embed=None
-# show=False
-# save_frames=False
-# save_txt=False
-# save_conf=False
-# save_crop=False
-# show_labels=True
-# show_conf=True
-# show_boxes=True
-# line_width=None
-# format=torchscript
-# keras=False
-# optimize=False
-# int8=False
-# dynamic=False
-# simplify=False
-# opset=None
-# workspace=4
-# nms=False
-# lr0=0.01
-# lrf=0.01
-# momentum=0.937
-# weight_decay=0.0005
-# warmup_epochs=3.0
-# warmup_momentum=0.8
-# warmup_bias_lr=0.1
-# box=7.5
-# cls=0.5
-# dfl=1.5
-# pose=12.0
-# kobj=1.0
-# label_smoothing=0.0
-# nbs=64
-# hsv_h=0.015
-# hsv_s=0.7
-# hsv_v=0.4
-# degrees=0.0
-# translate=0.1
-# scale=0.5
-# shear=0.0
-# perspective=0.0
-# flipud=0.0
-# fliplr=0.5
-# mosaic=1.0
-# mixup=0.0
-# copy_paste=0.0
-# cfg=None
-# tracker=botsort.yaml
-# save_dir=runs/segment/train7
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Train YOLO model')
+    parser.add_argument('--model', type=str, required=True, help='Path to the YOLO model file')
+    parser.add_argument('--data', type=str, required=True, help='Path to the data file')
+    parser.add_argument('--epochs', type=int, default=30, help='Number of epochs for training (default: 30)')
+    parser.add_argument('--img_size', type=int, default=720, help='Image size for training (default: 720)')
+    args = parser.parse_args()
 
-# Train the model
-results = model.train(data='ycb_ichores.yaml', epochs=100, imgsz=640, \
-                    hsv_h=0.03, \
-                    hsv_s=0.8, \
-                    hsv_v=0.6, \
-                    degrees=10.0, \
-                    translate=0.2, \
-                    scale=0.8, \
-                    shear=10.0, \
-                    perspective=0.1, \
-                    flipud=0.2, \
-                    fliplr=0.8, \
-                    mosaic=1.0, \
-                    mixup=0.2)
+    train_results = train_yolo(args.model, args.data, args.epochs, args.img_size)
+    print("Training results:", train_results)

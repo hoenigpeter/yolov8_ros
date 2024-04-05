@@ -1,4 +1,4 @@
-path: /yolo/datasets/tless_random_texture   # dataset root dir
+path: /yolo/datasets/itodd_random_texture  # dataset root dir
 train:  # train images (relative to 'path') 128 images
     - train
 val:   val # val images (relative to 'path') 128 images
@@ -33,6 +33,3 @@ names:
     24: "24"  
     25: "25"  
     26: "26"  
-    27: "27"  
-    28: "28"  
-    29: "29"  
