@@ -1,20 +1,12 @@
 from ultralytics import YOLO
-
 import rospy
-from std_msgs.msg import String, Float32MultiArray, Int64
+from actionlib import SimpleActionServer
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import RegionOfInterest
-from vision_msgs.msg import Detection2DArray
-from vision_msgs.msg import Detection2D
-from vision_msgs.msg import BoundingBox2D
-from vision_msgs.msg import ObjectHypothesisWithPose
-from geometry_msgs.msg import Pose2D
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Header
-from object_detector_msgs.msg import BoundingBox, Detection, Detections
-from object_detector_msgs.srv import detectron2_service_server
+from robokudo_msgs.msg import GenericImgProcAnnotatorResult, GenericImgProcAnnotatorAction
+import ros_numpy
 
-import cv2
 import numpy as np
 
 import argparse
@@ -54,20 +46,12 @@ class YOLOv8:
 
         # ROS Stuff
         self.bridge = CvBridge()
-        self.pub_detections = rospy.Publisher("/yolov5/detections", Detections, queue_size=10)
-        self.service = rospy.Service("/detect_objects", detectron2_service_server, self.service_call)
+        self.server = SimpleActionServer('/object_detector/yolov8', GenericImgProcAnnotatorAction, self.service_call, False)
 
-    def callback_image(self, msg):
-        try:
-            img0 = self.bridge.imgmsg_to_cv2(msg, "bgr8")
-        except CvBridgeError as e:
-            print(e)
+        self.server.start()
 
-        ros_detections = self.infer(img0) 
-        self.pub_detections.publish(ros_detections)   
-
-    def service_call(self, req):
-        rgb = req.image
+    def service_call(self, goal):
+        rgb = goal.rgb
         width, height = rgb.width, rgb.height
         assert width == 640 and height == 480
 
@@ -76,10 +60,14 @@ class YOLOv8:
         except CvBridgeError as e:
             print(e)
 
-        ros_detections = self.infer(img0) 
-        return ros_detections
-    
-    def infer(self, im0s):
+        ros_detections = self.infer(img0, rgb.header) 
+
+        if ros_detections.success:
+            self.server.set_succeeded(ros_detections)
+        else:
+            self.server.set_aborted(ros_detections)
+
+    def infer(self, im0s, rgb_header):
         height, width, channels = im0s.shape
 
         #img = im0s.transpose((2, 0, 1))
@@ -94,39 +82,43 @@ class YOLOv8:
 
             conf = results[0].boxes.conf.cpu().detach().numpy()
             names = results[0].names
+            bboxes = []
+            class_names = []
+            confidences = []
+            label_image = np.full((height, width), -1, np.int16)
             for idx in range(len(cls)):
-                detection = Detection()
-
-                # ---
-                detection.name = names[cls[idx]]
-                # ---
-
-                # ---            
-                bbox_msg = BoundingBox()
-                bbox_msg.ymin = int(boxes[idx][0])
-                bbox_msg.xmin = int(boxes[idx][1])
-                bbox_msg.ymax = int(boxes[idx][2])
-                bbox_msg.xmax = int(boxes[idx][3])
-                detection.bbox = bbox_msg
+                class_names.append(names[cls[idx]])
+                
+                bb = RegionOfInterest()
+                xmin = int(boxes[idx][0])
+                ymin = int(boxes[idx][1])
+                xmax = int(boxes[idx][2])
+                ymax = int(boxes[idx][3])
+                bb.x_offset = xmin
+                bb.y_offset = ymin
+                bb.height = ymax - ymin
+                bb.width = xmax - xmin
+                bb.do_rectify = False
+                bboxes.append(bb)
                 # ---
                 # mask
                 # ---
                 mask = masks[idx]
-                mask_ids = np.argwhere(mask.reshape((height * width)) > 0)
-                detection.mask = list(mask_ids.flat)
+                
+                label_image[mask > 0] = idx
                 # ---
-
-                # ---
-                detection.score = conf[idx]
+                confidences.append(conf[idx])
                 # ---
                 # 
-                detections.append(detection)   
+            mask_image = ros_numpy.msgify(Image, label_image, encoding='16SC1')
+        server_result = GenericImgProcAnnotatorResult()
+        server_result.success = True
+        server_result.bounding_boxes = bboxes
+        server_result.class_names = class_names
+        server_result.class_confidences = confidences
+        server_result.image = mask_image
 
-        ros_detections = Detections()
-        ros_detections.width, ros_detections.height = 640, 480
-        ros_detections.detections = detections
-
-        return ros_detections    
+        return server_result    
     
 def parse_opt():
     parser = argparse.ArgumentParser()
