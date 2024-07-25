@@ -44,6 +44,7 @@ class YOLOv8:
         self.conf_thres= conf_thres
         self.iou_thres = iou_thres
         self.camera_topic = camera_topic
+        self.device = device
 
         print(weights)
         self.model = YOLO(weights)  # load a custom model
@@ -83,7 +84,7 @@ class YOLOv8:
         height, width, channels = im0s.shape
 
         #img = im0s.transpose((2, 0, 1))
-        results = self.model(im0s, conf=0.9, iou=0.7, device="cuda:0")  # predict on an image
+        results = self.model(im0s, conf=self.conf_thres, iou=self.iou_thres, device=self.device)  # predict on an image
         detections = []
 
         cls = results[0].boxes.cls.cpu().detach().numpy()
