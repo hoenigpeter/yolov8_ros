@@ -19,6 +19,29 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
+names_mapping = {
+    "001_chips_can": "obj_000001",
+    "002_master_chef_can": "obj_000002",
+    "003_cracker_box": "obj_000003",
+    "004_sugar_box": "obj_000004",
+    "005_tomato_soup_can": "obj_000005",
+    "006_mustard_bottle": "obj_000006",
+    "008_pudding_box": "obj_000007",
+    "009_gelatin_box": "obj_000008",
+    "010_potted_meat_can": "obj_000009",
+    "011_banana": "obj_000010",
+    "013_apple": "obj_000011",
+    "014_lemon": "obj_000012",
+    "015_peach": "obj_000013",
+    "016_pear": "obj_000014",
+    "017_orange": "obj_000015",
+    "018_plum": "obj_000016",
+    "021_bleach_cleanser": "obj_000017",
+    "024_bowl": "obj_000018",
+    "025_mug": "obj_000019",
+    "029_plate": "obj_000020"
+}
+
 class YOLOv8:
     def __init__(
             self,
@@ -39,6 +62,7 @@ class YOLOv8:
 
         print(weights)
         self.model = YOLO(weights)  # load a custom model
+        self.is_ycb_ichores = ("ichores" in str(weights))
 
         print("\n\n\n")
         print(weights, device, data, camera_topic)
@@ -71,7 +95,7 @@ class YOLOv8:
         height, width, channels = im0s.shape
 
         #img = im0s.transpose((2, 0, 1))
-        results = self.model(im0s, conf=0.9, iou=0.7, device="cuda:0")  # predict on an image
+        results = self.model(im0s, conf=self.conf_thres, iou=0.7, device="cuda:0")  # predict on an image
         detections = []
 
         cls = results[0].boxes.cls.cpu().detach().numpy()
@@ -87,7 +111,10 @@ class YOLOv8:
             confidences = []
             label_image = np.full((height, width), -1, np.int16)
             for idx in range(len(cls)):
-                class_names.append(names[cls[idx]])
+                if self.is_ycb_ichores:
+                    class_names.append(names_mapping[names[cls[idx]]])
+                else:
+                    class_names.append(names[cls[idx]])
                 
                 bb = RegionOfInterest()
                 xmin = int(boxes[idx][0])
