@@ -1,13 +1,13 @@
 from ultralytics import YOLO
 
 # Load a model
-#model = YOLO('yolov8l-seg.pt')  # load a pretrained model (recommended for training)
-model = YOLO('runs/segment/train/weights/last.pt')  # load a pretrained model (recommended for training)
+model = YOLO('yolov8l-seg.pt')  # load a pretrained model (recommended for training)
+#model = YOLO('runs/segment/train/weights/last.pt')  # load a pretrained model (recommended for training)
 
 model.info()
 
 # Train the model
-results = model.train(data='ycbv.yaml', epochs=100, imgsz=640, augment=True, resume=True)
+results = model.train(data='ycbv.yaml', epochs=100, imgsz=640, augment=True)
 
 # Validate the model
 metrics = model.val()  # no arguments needed, dataset and settings remembered
