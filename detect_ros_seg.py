@@ -82,7 +82,7 @@ class YOLOv8:
     def infer(self, im0s):
         height, width, channels = im0s.shape
 
-        results = self.model(im0s, conf=self.conf_thres, iou=self.iou_thres, device=self.device)  # predict on an image
+        results = self.model(im0s, conf=self.conf_thres, iou=self.iou_thres, device=self.device, verbose=False)  # predict on an image
         detections = []
 
         cls = results[0].boxes.cls.cpu().detach().numpy()
