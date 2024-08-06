@@ -30,7 +30,7 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 class YOLOv8:
     def __init__(
             self,
-            weights='yolov5s.pt',  # model path or triton URL
+            weights='yolov8s.pt',  # model path or triton URL
             source=ROOT / 'data/images',  # file/dir/URL/glob/screen/0(webcam)
             data=ROOT / 'data/fleckerl.yaml',  # dataset.yaml path
             imgsz=(480, 640),  # inference size (height, width)
@@ -46,7 +46,6 @@ class YOLOv8:
         self.camera_topic = camera_topic
         self.device = device
 
-        print(weights)
         self.model = YOLO(weights)  # load a custom model
 
         print("\n\n\n")
@@ -83,7 +82,6 @@ class YOLOv8:
     def infer(self, im0s):
         height, width, channels = im0s.shape
 
-        #img = im0s.transpose((2, 0, 1))
         results = self.model(im0s, conf=self.conf_thres, iou=self.iou_thres, device=self.device)  # predict on an image
         detections = []
 
