@@ -63,6 +63,8 @@ RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin build
 # install yolov5 requirements
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+# something breaks here, so we need to reinstall importlib_metadata
+RUN pip uninstall importlib_metadata -y && pip install importlib_metadata --force-reinstall
 RUN python3 -m pip install \
     git+https://github.com/qboticslabs/ros_numpy.git
 

@@ -20,26 +20,26 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 names_mapping = {
-    "001_chips_can": "obj_000001",
-    "002_master_chef_can": "obj_000002",
-    "003_cracker_box": "obj_000003",
-    "004_sugar_box": "obj_000004",
-    "005_tomato_soup_can": "obj_000005",
-    "006_mustard_bottle": "obj_000006",
-    "008_pudding_box": "obj_000007",
-    "009_gelatin_box": "obj_000008",
-    "010_potted_meat_can": "obj_000009",
-    "011_banana": "obj_000010",
-    "013_apple": "obj_000011",
-    "014_lemon": "obj_000012",
-    "015_peach": "obj_000013",
-    "016_pear": "obj_000014",
-    "017_orange": "obj_000015",
-    "018_plum": "obj_000016",
-    "021_bleach_cleanser": "obj_000017",
-    "024_bowl": "obj_000018",
-    "025_mug": "obj_000019",
-    "029_plate": "obj_000020"
+    "001_chips_can": "001_chips_can",
+    "002_master_chef_can": "002_master_chef_can",
+    "003_cracker_box": "003_cracker_box",
+    "004_sugar_box": "004_sugar_box",
+    "005_tomato_soup_can": "005_tomato_soup_can",
+    "006_mustard_bottle": "006_mustard_bottle",
+    "008_pudding_box": "008_pudding_box",
+    "009_gelatin_box": "009_gelatin_box",
+    "010_potted_meat_can": "010_potted_meat_can",
+    "011_banana": "011_banana",
+    "013_apple": "013_apple",
+    "014_lemon": "014_lemon",
+    "015_peach": "015_peach",
+    "016_pear": "016_pear",
+    "017_orange": "017_orange",
+    "018_plum": "018_plum",
+    "021_bleach_cleanser": "021_bleach_cleanser",
+    "024_bowl": "024_bowl",
+    "025_mug": "025_mug",
+    "029_plate": "029_plate"
 }
 
 class YOLOv8:
