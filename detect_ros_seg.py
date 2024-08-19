@@ -138,12 +138,16 @@ class YOLOv8:
                 # ---
                 # 
             mask_image = ros_numpy.msgify(Image, label_image, encoding='16SC1')
-        server_result = GenericImgProcAnnotatorResult()
-        server_result.success = True
-        server_result.bounding_boxes = bboxes
-        server_result.class_names = class_names
-        server_result.class_confidences = confidences
-        server_result.image = mask_image
+    
+            server_result = GenericImgProcAnnotatorResult()
+            server_result.success = True
+            server_result.bounding_boxes = bboxes
+            server_result.class_names = class_names
+            server_result.class_confidences = confidences
+            server_result.image = mask_image
+        else:
+            server_result = GenericImgProcAnnotatorResult()
+            server_result.success = False
 
         return server_result    
     
