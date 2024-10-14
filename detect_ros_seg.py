@@ -45,7 +45,7 @@ names_mapping = {
 class YOLOv8:
     def __init__(
             self,
-            weights='yolov5s.pt',  # model path or triton URL
+            weights='yolov8s.pt',  # model path or triton URL
             source=ROOT / 'data/images',  # file/dir/URL/glob/screen/0(webcam)
             data=ROOT / 'data/fleckerl.yaml',  # dataset.yaml path
             imgsz=(480, 640),  # inference size (height, width)
@@ -59,8 +59,8 @@ class YOLOv8:
         self.conf_thres= conf_thres
         self.iou_thres = iou_thres
         self.camera_topic = camera_topic
+        self.device = device
 
-        print(weights)
         self.model = YOLO(weights)  # load a custom model
         self.is_ycb_ichores = ("ichores" in str(weights))
 
@@ -94,8 +94,7 @@ class YOLOv8:
     def infer(self, im0s, rgb_header):
         height, width, channels = im0s.shape
 
-        #img = im0s.transpose((2, 0, 1))
-        results = self.model(im0s, conf=self.conf_thres, iou=0.7, device="cuda:0")  # predict on an image
+        results = self.model(im0s, conf=self.conf_thres, iou=self.iou_thres, device=self.device, verbose=False)  # predict on an image
         detections = []
 
         cls = results[0].boxes.cls.cpu().detach().numpy()

@@ -1,8 +1,8 @@
-path: /hdd/datasets_yolo/ycbv  # dataset root dir
+path: /ssd3/datasets_bop/ycbv  # dataset root dir
 train:  # train images (relative to 'path') 128 images
-    - ycbv_pbr/train
-    - ycbv_real/train
-val:   ycbv_real/val # val images (relative to 'path') 128 images
+    - train_pbr_yolo
+    - train_real_yolo
+val:   test_yolo # val images (relative to 'path') 128 images
 test:  # test images (optional)
 
 # Classes
