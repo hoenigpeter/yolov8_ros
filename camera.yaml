@@ -1,0 +1,14 @@
+path: /ssd3/datasets_yolo/camera  # dataset root dir
+train:  # train images (relative to 'path') 128 images
+    - test_yolo
+val:   test_yolo # val images (relative to 'path') 128 images
+test:  # test images (optional)
+
+# Classes
+names:
+    0: "bottle"  # [1.3360 -0.5000 3.5105]
+    1: "bowl"  # [0.5575 1.7005 4.8050]
+    2: "camera"  # [-0.9520 1.4670 4.3645]
+    3: "can"  # [-0.0240 -1.5270 8.4035]
+    4: "laptop"  # [1.2995 2.4870 -11.8290]
+    5: "mug"  # [-0.1565 0.1150 4.2625]
