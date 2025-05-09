@@ -57,11 +57,20 @@ RUN /bin/bash -c  '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin conf
 
 # clone and build message and service definitions
 RUN /bin/bash -c 'cd /root/catkin_ws/src; \
+                  git clone https://gitlab.informatik.uni-bremen.de/robokudo/robokudo_msgs.git'
+RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin build'
+
+# clone and build message and service definitions
+RUN /bin/bash -c 'cd /root/catkin_ws/src; \
                   git clone https://github.com/v4r-tuwien/object_detector_msgs.git'
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin build'
 
-# install yolov5 requirements
+# install yolov8 requirements
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+# something breaks here, so we need to reinstall importlib_metadata
+RUN pip uninstall importlib_metadata -y && pip install importlib_metadata --force-reinstall
+RUN python3 -m pip install \
+    git+https://github.com/qboticslabs/ros_numpy.git
 
 WORKDIR /root
