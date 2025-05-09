@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y --allow-unauthe
 RUN sudo rosdep init
 RUN rosdep update
 RUN mkdir -p /root/catkin_ws/src
-RUN /bin/bash -c  '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so; catkin build'
+RUN /bin/bash -c  '. /opt/ros/noetic/setup.bash; cd /root/catkin_ws; catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so -DCMAKE_POLICY_VERSION_MINIMUM=3.5; catkin build'
 
 # clone and build message and service definitions
 RUN /bin/bash -c 'cd /root/catkin_ws/src; \
