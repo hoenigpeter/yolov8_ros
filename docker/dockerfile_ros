@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y \
 	python3-opencv ca-certificates python3-dev git wget sudo ninja-build
 RUN ln -sv /usr/bin/python3 /usr/bin/python
 
-RUN wget https://bootstrap.pypa.io/get-pip.py && \
-	python3 get-pip.py && \
+RUN wget https://bootstrap.pypa.io/pip/3.8/get-pip.py && \
+	python3 get-pip.py "pip<24.1" && \
 	rm get-pip.py
 
 # install lsb-release and curl
